@@ -2,7 +2,7 @@ CC=gcc
 SRCDIR=SRC
 SRC=$(shell ls SRC/*.c)
 OBJDIR=OBJ
-OBJ=$(patsubst $(SCRDIR)/%.c,$(OBJDIR)/%.o,$(SRC))
+OBJ=$(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRC))
 WARNINGS=-Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align \
          -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations \
          -Wredundant-decls -Wnested-externs -Winline -Wno-long-long \
@@ -14,6 +14,6 @@ all: shell
 shell: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-$(OBJDIR)/%.o: $(SCRDIR)/%.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) -o $@ -c $^ $(CFLAGS)
 
