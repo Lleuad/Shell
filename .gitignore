@@ -27,6 +27,8 @@
 *.so
 *.so.*
 *.dylib
+*.wasm
+*.wast
 
 # Executables
 *.exe
@@ -36,6 +38,7 @@
 *.x86_64
 *.hex
 shell
+shell.js
 
 # Debug files
 *.dSYM/
