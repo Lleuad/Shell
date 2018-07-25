@@ -36,13 +36,19 @@ void Expected_c(char c);
 #define IsAlNum isalnum
 #define IsAddop(c) (c == '+' || c == '-')
 #define IsWhite(c) (c == ' ' || c == TAB)
+#define IsCR(c) (c == CR || c == '\r')
+#define IsBoolean(c) (toupper(c) == 'F' || toupper(c) == 'T')
+#define IsOrop(c) (c == '|' || c == '~')
+#define IsRelop(c) (c == '=' || c == '#' || c == '<' || c == '>')
 
 //Skip White Space
 #define SkipWhite() while IsWhite(Look) GetChar()
+#define Fin() while IsCR(Look) GetChar()
 
 void Match(char x);              //Match a Specific Input Character
 char* GetName(void);             //Get an Identifier
 char* GetNum(void);              //Get a Number
+int GetBoolean(void);            //Get a Boolean Literal
 char* NewLabel(void);            //Generate a Unique Label
 
 //Post a Label To Outpun

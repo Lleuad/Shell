@@ -8,7 +8,7 @@ void Abort(const char* s){
 
 //Report What Was Expected
 void Expected_s(const char* s){
-    fprintf(stderr, "Error: %s Expected.\n", s);
+    fprintf(stderr, "Error: Got '%c', Expected %s.\n", Look, s);
     exit(1);
 }
 
@@ -16,11 +16,6 @@ void Expected_c(char c){
     fprintf(stderr, "Error: Got '%c', '%c' Expected.\n", Look, c);
     exit(1);
 }
-
-//Skip White Space
-//void SkipWhite(){
-//    while IsWhite(Look) GetChar();
-//}
 
 //Match a Specific Input Character
 void Match(char x){
@@ -54,6 +49,16 @@ char* GetNum(){
     SkipWhite();
 
     return Token;
+}
+
+//Get a Boolean Literal
+int GetBoolean(){
+    int bool;
+    if (!IsBoolean(Look)) Expected("Boolean Literal");
+    bool = (toupper(Look) == 'T');
+    GetChar();
+    SkipWhite();
+    return bool;
 }
 
 //Generate a Unique Label

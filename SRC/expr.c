@@ -1,5 +1,6 @@
 #include "cradle.h"
 #include "expr.h"
+#include "bool.h"
 
 //Parse and Translate an Identifier
 //<ident> ::= <function> "()" | <variable>
@@ -16,9 +17,22 @@ void Ident(){
 }
 
 //Parse and Translate a Math Factor
-//<factor> ::= "(" <expression> ")" | <ident> | <number>
+//<factor> ::= [<addop>] <unsigned-factor>
+//<unsigned-factor> :: = "(" <expression> ")" | <ident> | <number>
 void Factor(){
-    char* Num = NULL;
+    char *Num = NULL;
+    int neg = 0;
+
+    switch (Look){
+        case '+':
+            Match('+');
+            break;
+        case '-':
+            Match('-');
+            neg = 1;
+            break;
+    }
+
     if (Look == '('){
         Match('(');
         Expression();
@@ -29,6 +43,7 @@ void Factor(){
         Num = GetNum();
         Emit("MOVE #%s, D0\n", Num);
     }
+    if (neg) Emit("NEG D0\n");
     free(Num);
 }
 
@@ -52,6 +67,7 @@ void Divide(){
 //<mulop> ::= "*" | "/"
 void Term(){
     Factor();
+
     while (Look == '*' || Look == '/'){
         Emit("MOVE D0, -(SP)\n");
         switch (Look){
@@ -64,7 +80,6 @@ void Term(){
         }
     }
 }
-
 
 //Recognize and Translate an Add
 void Add(){
@@ -85,11 +100,7 @@ void Subtract(){
 //<expression> ::= <term> [ <addop> term> ]*
 //<addop> ::= "+" | "-"
 void Expression(){
-    if ( IsAddop(Look) ){
-        Emit("CLR DO\n");
-    }else{
-        Term();
-    }
+    Term();
 
     Emit("MOVE D0, -(SP)\n");
     while ( IsAddop(Look) ){
@@ -109,7 +120,7 @@ void Expression(){
 void Assignment(){
     char* Name = GetName();
     Match('=');
-    Expression();
+    BoolExpression();
     Emit("LEA %s(PC), A0\n", Name);
     Emit("MOVE D0, (A0)\n");
     free(Name);

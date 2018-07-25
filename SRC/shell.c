@@ -2,6 +2,7 @@
 #include "cradle.h"
 #include "expr.h"
 #include "control.h"
+#include "bool.h"
 
 int main(void);
 

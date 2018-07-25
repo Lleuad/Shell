@@ -1,24 +1,11 @@
 #include "cradle.h"
 #include "control.h"
-
-void Condition(void);  //Parse and Translate a Boolean Condition
-void Expr(void); //Parse and Translate an Expression
+#include "bool.h"
+#include "expr.h"
 
 //Recognize and Translate an "Other"
 void Other(){
     Emit("%s\n", GetName());
-}
-
-//Parse and Translate a Boolean Condition
-//FIXME dummy
-void Condition(){
-    Emit("<condition>\n");
-}
-
-//Parse and Translate a Expression
-//FIXME dummy
-void Expr(){
-    Emit("<expr>\n");
 }
 
 //Recognize and Translate an IF Construct
@@ -27,7 +14,7 @@ void DoIf(char *L){
     char* L1;
     char* L2;
     Match('i');
-    Condition();
+    BoolExpression();
     L1 = NewLabel();
     L2 = NULL;
     Emit("BEQ %s\n", L1);
@@ -53,7 +40,7 @@ void DoWhile(){
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
-    Condition();
+    BoolExpression();
     Emit("BEQ %s\n", L2);
     Block(L2);
     Match('e');
@@ -90,7 +77,7 @@ void DoRepeat(){
     PostLabel(L1);
     Block(L2);
     Match('u');
-    Condition();
+    BoolExpression();
     Emit("BEQ %s\n", L1);
     PostLabel(L2);
 
@@ -107,11 +94,11 @@ void DoFor(){
     L2 = NewLabel();
     Name = GetName();
     Match('=');
-    Expr();
+    Expression();
     Emit("SUBQ #1, D0\n");
     Emit("LEA %s(PC), A0\n", Name);
     Emit("MOVE D0, (A0)\n");
-    Expr();
+    Expression();
     Emit("MOVE D0, -(SP)\n");
     PostLabel(L1);
     Emit("LEA %s(PC), A0\n", Name);
@@ -138,7 +125,7 @@ void DoDo(){
     Match('d');
     L1 = NewLabel();
     L2 = NewLabel();
-    Expr();
+    Expression();
     Emit("SUBQ #1, D0\n");
     PostLabel(L1);
     Emit("MOVE D0, -(SP)\n");
@@ -165,6 +152,7 @@ void DoBreak(char *L){
 //<block> ::= [ <statement> ]*
 void Block(char *L){
     while ( !(Look == 'e' || Look == 'l' || Look == 'u') ){
+        Fin();
         switch (Look) {
             case 'i':
                 DoIf(L);
@@ -188,9 +176,10 @@ void Block(char *L){
                 DoBreak(L);
                 break;
             default:
-                Other();
+                Assignment();
                 break;
         }
+        Fin();
     }
 }
 
