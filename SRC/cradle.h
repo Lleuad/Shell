@@ -37,7 +37,7 @@ void Expected_c(char c);
 #define IsAddop(c) (c == '+' || c == '-')
 #define IsWhite(c) (c == ' ' || c == TAB)
 #define IsCR(c) (c == CR || c == '\r')
-#define IsBoolean(c) (toupper(c) == 'F' || toupper(c) == 'T')
+#define IsBoolean(c) (c == 'F' || c == 'T')
 #define IsOrop(c) (c == '|' || c == '~')
 #define IsRelop(c) (c == '=' || c == '#' || c == '<' || c == '>')
 
