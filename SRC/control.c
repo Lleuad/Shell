@@ -13,20 +13,20 @@ void Other(){
 void DoIf(char *L){
     char* L1;
     char* L2;
-    Match('i');
+    Match('I');
     BoolExpression();
     L1 = NewLabel();
     L2 = NULL;
     Emit("BEQ %s\n", L1);
     Block(L);
-    if (Look == 'l') {
-        Match('l');
+    if (Look == 'L') {
+        Match('L');
         L2 = NewLabel();
         Emit("BRA %s\n", L2);
         PostLabel(L1);
         Block(L);
     }
-    Match('e');
+    Match('E');
     PostLabel(L2 ? L2 : L1);
     free(L1);
     free(L2);
@@ -36,14 +36,14 @@ void DoIf(char *L){
 //<WHILE-statement> ::= "WHILE" <condition> <block> "ENDWHILE"
 void DoWhile(){
     char *L1, *L2;
-    Match('w');
+    Match('W');
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
     BoolExpression();
     Emit("BEQ %s\n", L2);
     Block(L2);
-    Match('e');
+    Match('E');
     Emit("BRA %s\n", L1);
     PostLabel(L2);
     free(L1);
@@ -54,12 +54,12 @@ void DoWhile(){
 //<LOOP-statement> ::= "LOOP" <block> "ENDLOOP"
 void DoLoop(){
     char *L1, *L2;
-    Match('p');
+    Match('P');
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
     Block(L2);
-    Match('e');
+    Match('E');
     Emit("BRA %s\n", L1);
     PostLabel(L2);
 
@@ -71,12 +71,12 @@ void DoLoop(){
 //<REPEAT-statement> ::= "REPEAT" <block> "UNTIL" <condition>
 void DoRepeat(){
     char *L1, *L2;
-    Match('r');
+    Match('R');
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
     Block(L2);
-    Match('u');
+    Match('U');
     BoolExpression();
     Emit("BEQ %s\n", L1);
     PostLabel(L2);
@@ -86,10 +86,10 @@ void DoRepeat(){
 }
 
 //Recognize and Translate a FOR Construct
-//<FOR-statement> ::= "FOR" <expr1> <expr2> <block> "ENDFOR"
+//<FOR-statement> ::= "FOR" <name> "=" <expr1> <expr2> <block> "ENDFOR"
 void DoFor(){
     char *L1, *L2, *Name;
-    Match('f');
+    Match('F');
     L1 = NewLabel();
     L2 = NewLabel();
     Name = GetName();
@@ -108,7 +108,7 @@ void DoFor(){
     Emit("CMP (SP), D0\n");
     Emit("BGT %s\n", L2);
     Block(L2);
-    Match('e');
+    Match('E');
     Emit("BRA %s\n", L1);
     PostLabel(L2);
     Emit("ADDQ #2, SP\n");
@@ -122,7 +122,7 @@ void DoFor(){
 //<DO-statement> ::= "DO" <expr> <block> "ENDDO"
 void DoDo(){
     char *L1, *L2;
-    Match('d');
+    Match('D');
     L1 = NewLabel();
     L2 = NewLabel();
     Expression();
@@ -143,7 +143,7 @@ void DoDo(){
 //Recognize and Translate a BREAK Statement
 //<BREAK-statement> ::= "BREAK"
 void DoBreak(char *L){
-    Match('b');
+    Match('B');
     if (L) Emit("BRA %s\n", L);
     else Abort("Can't break from global scope.\n");
 }
@@ -151,28 +151,28 @@ void DoBreak(char *L){
 //Recognize and Translate a Statement Block
 //<block> ::= [ <statement> ]*
 void Block(char *L){
-    while ( !(Look == 'e' || Look == 'l' || Look == 'u') ){
+    while ( !(Look == 'E' || Look == 'L' || Look == 'U') ){
         Fin();
         switch (Look) {
-            case 'i':
+            case 'I':
                 DoIf(L);
                 break;
-            case 'w':
+            case 'W':
                 DoWhile();
                 break;
-            case 'p':
+            case 'P':
                 DoLoop();
                 break;
-            case 'r':
+            case 'R':
                 DoRepeat();
                 break;
-            case 'f':
+            case 'F':
                 DoFor();
                 break;
-            case 'd':
+            case 'D':
                 DoDo();
                 break;
-            case 'b':
+            case 'B':
                 DoBreak(L);
                 break;
             default:
@@ -187,6 +187,6 @@ void Block(char *L){
 //<program> ::= <block> END
 void DoProgram(){
     Block(NULL);
-    if (Look != 'e') Expected("End");
+    if (Look != 'E') Expected("End");
     Emit("END\n");
 }

@@ -97,7 +97,7 @@ void Subtract(){
 }
 
 //Parse and Translate an Expression
-//<expression> ::= <term> [ <addop> term> ]*
+//<expression> ::= <term> [ <addop> <term> ]*
 //<addop> ::= "+" | "-"
 void Expression(){
     Term();
