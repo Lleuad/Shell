@@ -32,6 +32,7 @@
 <ident> ::= <name> [ "()" ]
 
 <name> ::= <alpha> [ <alnum> ]*
+<number> ::= <digit> [ <digit> ]*
 ```
 
 ### Credits ###
