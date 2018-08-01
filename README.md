@@ -7,7 +7,7 @@
 <statement> ::= <IF> | <WHILE> | <LOOP> | <REPEAT> | <FOR> | <DO> | <BREAK> | <assignment>
 <IF> ::= "I" <b-expression> <block> [ "L" <block> ] "E"
 <WHILE> ::= "W" <b-expression> <block> "E"
-<LOOP> ::= "L" <block> "E"
+<LOOP> ::= "P" <block> "E"
 <REPEAT> ::= "R" <block> "U" <b-expression>
 <FOR> ::= "F" <name> "=" <expression> <expression> <block> "E"
 <DO> ::= "D" <expression> <block> "E"
