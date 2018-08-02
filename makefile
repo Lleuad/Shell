@@ -3,6 +3,7 @@ JC=emcc
 
 SRCDIR=SRC
 SRC=$(shell ls SRC/*.c)
+HDR=$(shell ls SRC/*.h)
 
 OBJDIR=.OBJ
 OBJ=$(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRC))
@@ -27,14 +28,16 @@ $(OBJDIRS):
 shell: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
-	$(CC) -o $@ -c $^ $(CFLAGS)
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h | $(OBJDIR)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 shell.js: $(OBJS)
 	$(JC) -o $@ $^ $(CFLAGS)
 
-$(OBJSDIR)/%.o: $(SRCDIR)/%.c | $(OBJSDIR)
-	$(JC) -o $@ -c $^ $(CFLAGS)
+$(OBJSDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h | $(OBJSDIR)
+	$(JC) -o $@ -c $< $(CFLAGS)
+
+$(SRCDIR)/%.h:
 
 clean:
 	rm -r $(OBJDIRS)
