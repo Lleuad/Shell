@@ -1,10 +1,11 @@
-/*! terminal.js v2.0 | (c) 2014 Erik Österberg | https://github.com/eosterberg/terminaljs
- *! terminal.js v2.1 | (c) 2018 Erik Nonhebel  | https://github.com/lleuda/shell */
-
+/*! terminal.js v2.0   | (c) 2014 Erik Österberg | https://github.com/eosterberg/terminaljs
+ *! terminal.js v2.1.2 | (c) 2018 Erik Nonhebel  | https://github.com/lleuda/shell */
 
 var Terminal = (function () {
     // PROMPT_TYPE
     var PROMPT_INPUT = 1, PROMPT_PASSWORD = 2
+    var VersionMajor = "2"
+    var VersionMinor = "1.2"
 
     var fireCursorInterval = function (inputField, terminalObj) {
         var cursor = terminalObj._cursor
@@ -23,16 +24,22 @@ var Terminal = (function () {
         var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT)
         var inputField = document.createElement('input')
 
-        inputField.style.position = 'absolute'
-        inputField.style.zIndex = '-100'
+//      inputField.style.position = 'absolute'
+//      inputField.style.zIndex = '-100'
         inputField.style.outline = 'none'
         inputField.style.border = 'none'
-        inputField.style.opacity = '0'
-        inputField.style.fontSize = '0.2em'
+//      inputField.style.opacity = '0'
+//      inputField.style.fontSize = '0.0em'
+        inputField.style.fontSize = '1em'
+        inputField.style.fontFamily = 'Monaco, Courier'
+        inputField.style.background = "black"
+        inputField.style.color = "white"
 
         terminalObj._inputLine.textContent = ''
         terminalObj._input.style.display = 'block'
-        terminalObj.html.appendChild(inputField)
+//      terminalObj.html.appendChild(inputField)
+        terminalObj._input.appendChild(inputField)
+//
         fireCursorInterval(inputField, terminalObj)
 
         terminalObj._dir.textContent = message.length ? message : ""
@@ -51,8 +58,8 @@ var Terminal = (function () {
         }
 
         inputField.onkeydown = function (e) {
-            if (e.which === 37 || e.which === 39 || e.which === 38 || e.which === 40 || e.which === 9) {
-            //if (e.which === 38 || e.which === 40 || e.which === 9) {
+            //if (e.which === 37 || e.which === 39 || e.which === 38 || e.which === 40 || e.which === 9) {
+            if (e.which === 38 || e.which === 40 || e.which === 9) {
                 e.preventDefault()
             } else if (shouldDisplayInput && e.which !== 13) {
                 setTimeout(function () {
@@ -67,7 +74,8 @@ var Terminal = (function () {
 
                 if (shouldDisplayInput) terminalObj.print(message + inputValue)
 
-                terminalObj.html.removeChild(inputField)
+                //terminalObj.html.removeChild(inputField)
+                terminalObj._input.removeChild(inputField)
 
                 if (typeof(callback) === 'function') callback(inputValue)
             }
@@ -126,6 +134,10 @@ var Terminal = (function () {
             this._output.innerHTML = ''
         }
 
+        this.version = function () {
+            return VersionMajor + "." + VersionMinor
+        }
+
         this.sleep = function (milliseconds, callback) {
             setTimeout(callback, milliseconds)
         }
@@ -158,13 +170,14 @@ var Terminal = (function () {
         }
 
         this._input.appendChild(this._dir)
-        this._input.appendChild(this._inputLine)
-        this._input.appendChild(this._cursor)
+        //this._input.appendChild(this._inputLine)
+        //this._input.appendChild(this._cursor)
         this._innerWindow.appendChild(this._output)
         this._innerWindow.appendChild(this._input)
         this.html.appendChild(this._innerWindow)
 
         this.setBackgroundColor('black')
+        //this.setBackgroundColor('red')
         this.setTextColor('white')
         this.setTextSize('1em')
         this.setWidth('100%')
