@@ -2,7 +2,7 @@
 
 ### Syntax ###
 ```
-<program> ::= <block> "E"
+<program> ::= <block> "END"
 <block> ::= [ <statement> ]*
 <statement> ::= <IF> | <WHILE> | <LOOP> | <REPEAT> | <FOR> | <DO> | <BREAK> | <assignment>
 <IF> ::= "IF" <b-expression> <block> [ "ELSE" <block> ] "ENDIF"
