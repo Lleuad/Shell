@@ -5,22 +5,20 @@
 //Parse and Translate an Identifier
 //<ident> ::= <function> "()" | <variable>
 void Ident(){
-    char* Name = GetName();
+    GetName();
     if (Look == '('){
         Match('(');
         Match(')');
-        Emit("BSR %s\n", Name);
+        Emit("BSR %s\n", Value);
     }else{
-        Emit("MOVE %s(PC), D0\n", Name);
+        Emit("MOVE %s(PC), D0\n", Value);
     }
-    free(Name);
 }
 
 //Parse and Translate a Math Factor
 //<factor> ::= [<addop>] <unsigned-factor>
 //<unsigned-factor> :: = "(" <expression> ")" | <ident> | <number>
 void Factor(){
-    char *Num = NULL;
     int neg = 0;
 
     switch (Look){
@@ -40,11 +38,10 @@ void Factor(){
     }else if ( IsAlpha(Look) ){
         Ident();
     }else{
-        Num = GetNum();
-        Emit("MOVE #%s, D0\n", Num);
+        GetNum();
+        Emit("MOVE #%s, D0\n", Value);
     }
     if (neg) Emit("NEG D0\n");
-    free(Num);
 }
 
 //Recognize and Translate a Multiply
@@ -68,7 +65,7 @@ void Divide(){
 void Term(){
     Factor();
 
-    while (Look == '*' || Look == '/'){
+    while ( IsMulop(Look) ){
         Emit("MOVE D0, -(SP)\n");
         switch (Look){
             case '*':
@@ -118,7 +115,10 @@ void Expression(){
 //Parse and Translate an Assignment Statement
 //<assignment> ::= <ident> "=" <expression>
 void Assignment(){
-    char* Name = GetName();
+    char *Name;
+    if (!(Name = malloc(ValueSize * sizeof (char)))) MemError();
+    strcpy(Name, Value);
+
     Match('=');
     BoolExpression();
     Emit("LEA %s(PC), A0\n", Name);

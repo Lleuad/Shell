@@ -17,6 +17,15 @@ void Expected_c(char c){
     exit(1);
 }
 
+//Skip Over a Comma
+void SkipComma(){
+    SkipWhite();
+    if ( Look == ',' ){
+        GetChar();
+        SkipWhite();
+    }
+}
+
 //Match a Specific Input Character
 void Match(char x){
     if(Look == x){
@@ -27,28 +36,54 @@ void Match(char x){
     }
 }
 
-//Get an Identifier
-char* GetName(){
-    char* Token = calloc(TOKENSIZE, sizeof(char));
-    if ( !IsAlpha(Look) ) Expected("Name");
-    for (int i = 0; i < TOKENSIZE && IsAlNum(Look); i++, GetChar()){
-        Token[i] = (char)toupper(Look);
-    }
-    SkipWhite();
+void MatchString(const char* s){
+    if (strcmp(Value, s)) Expected(s);
+}
 
-    return Token;
+//Get an Identifier
+void GetName(){
+    size_t i;
+    Fin();
+    if ( !IsAlpha(Look) ) Expected("Name");
+    for (i = 0; IsAlNum(Look); i++, GetChar()){
+        Value[i] = (char)toupper(Look);
+        if (i == ValueSize){
+            ValueSize <<= 1;
+            if (!(Value = realloc(Value, ValueSize * sizeof (char)))) MemError();
+       }
+    }
+    Value[i] = 0;
+    SkipWhite();
 }
 
 //Get a Number
-char* GetNum(){
-    char* Token = calloc(TOKENSIZE, sizeof(char));
+void GetNum(){
+    size_t i;
     if ( !IsDigit(Look) ) Expected("Integer");
-    for (int i = 0; i < TOKENSIZE && IsDigit(Look); i++, GetChar()){
-        Token[i] = Look;
+    for (i = 0; IsDigit(Look); i++, GetChar()){
+        Value[i] = Look;
+        if (i == ValueSize){
+            ValueSize <<= 1;
+            if (!(Value = realloc(Value, ValueSize * sizeof (char)))) MemError();
+       }
     }
+    Value[i] = 0;
+    Token = '#';
     SkipWhite();
+}
 
-    return Token;
+void GetOp(){
+    size_t i;
+    if ( !IsOp(Look) ) Expected("Relation");
+    for (i = 0; IsOp(Look); i++, GetChar()){
+        Value[i] = Look;
+        if (i == ValueSize){
+            ValueSize <<= 1;
+            if (!(Value = realloc(Value, ValueSize * sizeof (char)))) MemError();
+       }
+    }
+    Value[i] = 0;
+    SkipWhite();
 }
 
 //Get a Boolean Literal
@@ -83,6 +118,8 @@ void Emit(const char* fmt, ...){
 //Initialize
 void Init(){
     Lcount = 0;
+    Value = malloc(TOKENSIZE * sizeof (char));
+    ValueSize = TOKENSIZE;
     GetChar();
     SkipWhite();
 }

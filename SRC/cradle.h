@@ -15,6 +15,9 @@
 
 //Variable Declarations
 char Look;           //Lookahead Character
+char Token;          //Encoded Token
+char* Value;         //Unencoded Token
+size_t ValueSize;    //Buffersize of Value
 unsigned int Lcount; //Label Counter
 
 //Read New Character From Input Stream
@@ -22,6 +25,8 @@ unsigned int Lcount; //Label Counter
 
 //Report an Error
 #define Error(s) fprintf(stderr, "Error: %s.\n", s)
+#define MemError() Abort("Insufficient Memory")
+#define FileError(s) Abort("%s, no such file")
 
 void Abort(const char* s); //Report Error and Halt
 
@@ -35,19 +40,24 @@ void Expected_c(char c);
 #define IsDigit isdigit
 #define IsAlNum isalnum
 #define IsAddop(c) (c == '+' || c == '-')
+#define IsMulop(c) (c == '*' || c == '/')
 #define IsWhite(c) (c == ' ' || c == TAB)
 #define IsCR(c) (c == CR || c == '\r')
 #define IsBoolean(c) (c == 'F' || c == 'T')
 #define IsOrop(c) (c == '|' || c == '~')
 #define IsRelop(c) (c == '=' || c == '#' || c == '<' || c == '>')
+#define IsOp(c) (IsAddop(c) || IsMulop(c) || IsRelop(c))
 
 //Skip White Space
 #define SkipWhite() while IsWhite(Look) GetChar()
 #define Fin() while IsCR(Look) GetChar()
 
-void Match(char x);              //Match a Specific Input Character
-char* GetName(void);             //Get an Identifier
-char* GetNum(void);              //Get a Number
+void SkipComma(void);            //Skip Over a Comma
+void Match(char);                //Match a Specific Input Character
+void MatchString(const char *);  //Match a Specific Input String
+void GetName(void);              //Get an Identifier
+void GetNum(void);               //Get a Number
+void GetOp(void);                //Get an Operator
 int GetBoolean(void);            //Get a Boolean Literal
 char* NewLabel(void);            //Generate a Unique Label
 
