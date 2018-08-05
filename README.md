@@ -5,13 +5,13 @@
 <program> ::= <block> "E"
 <block> ::= [ <statement> ]*
 <statement> ::= <IF> | <WHILE> | <LOOP> | <REPEAT> | <FOR> | <DO> | <BREAK> | <assignment>
-<IF> ::= "I" <b-expression> <block> [ "L" <block> ] "E"
-<WHILE> ::= "W" <b-expression> <block> "E"
-<LOOP> ::= "P" <block> "E"
-<REPEAT> ::= "R" <block> "U" <b-expression>
-<FOR> ::= "F" <name> "=" <expression> <expression> <block> "E"
-<DO> ::= "D" <expression> <block> "E"
-<BREAK> ::= "B"
+<IF> ::= "IF" <b-expression> <block> [ "ELSE" <block> ] "ENDIF"
+<WHILE> ::= "WHILE" <b-expression> <block> "ENDWHILE"
+<LOOP> ::= "LOOP" <block> "ENDLOOP"
+<REPEAT> ::= "REPEAT" <block> "UNTIL" <b-expression>
+<FOR> ::= "FOR" <name> "=" <expression> <expression> <block> "ENDFOR"
+<DO> ::= "DO" <expression> <block> "ENDDO"
+<BREAK> ::= "BREAK"
 
 <b-expression> ::= <b-term> [ <orop> <b-term> ]*
 <orop> ::= "|" | "~"
