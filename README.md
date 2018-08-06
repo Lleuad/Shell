@@ -34,13 +34,13 @@
 <name> ::= <alpha> [ <alnum> ]*
 <number> ::= <digit> [ <digit> ]*
 <alnum> ::= <alpha> | <digit>
-<digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-<alpha> ::= A | B | C | D | E | F | G | H | I |
-            J | K | L | M | N | O | P | Q | R |
-            S | T | U | V | W | X | Y | Z
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<alpha> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" |
+            "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" |
+            "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
 <CR> ::= "\n" | "\r"
 ```
-Even though it is good practice to use whitespace to increase readability it is techically only required to separate a `<name>` from another `<name>` or a `<number>`. `IF0=0` is an assignment of `0` to a variable named `IF0` whereas `IF 0=0` is the start of an if-statement testing the equallity of `0` with itself. On the otherhand `IF!a=0a=0ENDIF` is perfectly valid code that assigns `0` to a variable `a` if it isn't `0` already.
+Even though it is good practice to use whitespace to increase readability it is techically only required to separate an alphanumeric sequence starting with an alpha character from another or from a `<number>`. `IF0=0` is an assignment of `0` to a variable named `IF0` whereas `IF 0=0` is the start of an if-statement testing the equallity of `0` with itself. On the otherhand `IF!a=0a=0ENDIF` is perfectly valid code that assigns `0` to a variable `a` if it isn't `0` already.
 
 ### Credits ###
 
