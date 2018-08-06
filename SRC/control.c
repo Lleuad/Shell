@@ -139,7 +139,7 @@ void DoDo(){
 //<BREAK-statement> ::= "BREAK"
 void DoBreak(char *L){
     if (L) Emit("BRA %s\n", L);
-    else Abort("Can't break from global scope.\n");
+    else Abort("Can't break from global scope");
 }
 
 //Recognize and Translate a Statement Block

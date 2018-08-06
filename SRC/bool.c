@@ -76,7 +76,7 @@ void BoolFactor(){
         Relation();
     }
 
-    if (neg) Emit("EOR #-1, D0");
+    if (neg) Emit("EOR #-1, D0\n");
 }
 
 //Parse and Translate a Boolean Term
