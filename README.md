@@ -3,7 +3,7 @@
 ### Syntax ###
 ```
 <program> ::= <block> "END"
-<block> ::= [ [ <CR> ]* <statement> [ <CR> ]* ]*
+<block> ::= [ <statement> ]*
 <statement> ::= <IF> | <WHILE> | <LOOP> | <REPEAT> | <FOR> | <DO> | <BREAK> | <assignment>
 <IF> ::= "IF" <b-expression> <block> [ "ELSE" <block> ] "ENDIF"
 <WHILE> ::= "WHILE" <b-expression> <block> "ENDWHILE"
@@ -38,9 +38,9 @@
 <alpha> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" |
             "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" |
             "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
-<CR> ::= "\n" | "\r"
+<whitespace> ::= " " | ^I | ^M | ^J
 ```
-Even though it is good practice to use whitespace to increase readability it is techically only required to separate a `<name>` sequence from another or from a `<number>`. For instance; `IF0=0` is an assignment of `0` to a variable named `IF0` whereas `IF 0=0` is the start of an if-statement testing the equallity of `0` to itself. On the otherhand `IF!a=0a=0ENDIF` is perfectly valid code that assigns `0` to a variable `a` if it isn't `0` already.
+In unambiguous cases whitespace is optional.
 
 ### Credits ###
 
