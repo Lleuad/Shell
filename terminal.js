@@ -24,23 +24,16 @@ var Terminal = (function () {
         var shouldDisplayInput = (PROMPT_TYPE === PROMPT_INPUT)
         var inputField = document.createElement('input')
 
-//      inputField.style.position = 'absolute'
-//      inputField.style.zIndex = '-100'
         inputField.style.outline = 'none'
         inputField.style.border = 'none'
-//      inputField.style.opacity = '0'
-//      inputField.style.fontSize = '0.0em'
         inputField.style.fontSize = '1em'
         inputField.style.fontFamily = 'Monaco, Courier'
-        inputField.style.background = "black"
+        inputField.style.background = "gray"
         inputField.style.color = "white"
 
         terminalObj._inputLine.textContent = ''
         terminalObj._input.style.display = 'block'
-//      terminalObj.html.appendChild(inputField)
         terminalObj._input.appendChild(inputField)
-//
-        fireCursorInterval(inputField, terminalObj)
 
         terminalObj._dir.textContent = message.length ? message : ""
 
@@ -91,12 +84,6 @@ var Terminal = (function () {
     var terminalBeep
 
     var TerminalConstructor = function (id) {
-        if (!terminalBeep) {
-            terminalBeep = document.createElement('audio')
-            var source = '<source src="http://www.erikosterberg.com/terminaljs/beep.'
-            terminalBeep.innerHTML = source + 'mp3" type="audio/mpeg">' + source + 'ogg" type="audio/ogg">'
-            terminalBeep.volume = 0.05
-        }
 
         this.html = document.createElement('div')
         this.html.className = 'Terminal'
@@ -108,13 +95,6 @@ var Terminal = (function () {
         this._inputLine = document.createElement('span') //the span element where the users input is put
         this._cursor = document.createElement('span')
         this._input = document.createElement('p') //the full element administering the user input, including cursor
-
-        this._shouldBlinkCursor = true
-
-        this.beep = function () {
-            terminalBeep.load()
-            terminalBeep.play()
-        }
 
         this.print = function (message) {
             var newLine = document.createElement('div')
@@ -164,14 +144,7 @@ var Terminal = (function () {
             this.html.style.height = height
         }
 
-        this.blinkingCursor = function (bool) {
-            bool = bool.toString().toUpperCase()
-            this._shouldBlinkCursor = (bool === 'TRUE' || bool === '1' || bool === 'YES')
-        }
-
         this._input.appendChild(this._dir)
-        //this._input.appendChild(this._inputLine)
-        //this._input.appendChild(this._cursor)
         this._innerWindow.appendChild(this._output)
         this._innerWindow.appendChild(this._input)
         this.html.appendChild(this._innerWindow)
@@ -188,9 +161,6 @@ var Terminal = (function () {
         this._innerWindow.style.padding = '10px'
         this._input.style.margin = '0'
         this._output.style.margin = '0'
-        this._cursor.style.background = 'white'
-        this._cursor.innerHTML = 'C' //put something in the cursor..
-        this._cursor.style.display = 'none' //then hide it
         this._input.style.display = 'none'
     }
 
