@@ -6,32 +6,32 @@
 void Equals(){
     Match('=');
     Expression();
-    Emit("CMP (SP)+, D0\n");
-    Emit("SEQ D0\n");
+    PopCompare();
+    SetEqual();
 }
 
 //Recognize and Translate a Relational "Nat Equals"
 void NotEquals(){
     Match('#');
     Expression();
-    Emit("CMP (SP)+, D0\n");
-    Emit("SNE D0\n");
+    PopCompare();
+    SetNEqual();
 }
 
 //Recognize and Translate a Relational "Less Than"
 void Less(){
     Match('<');
     Expression();
-    Emit("CMP (SP)+, D0\n");
-    Emit("SGE D0\n");
+    PopCompare();
+    SetLess();
 }
 
 //Recognize and Translate a Relational "Greater Than"
 void Greater(){
     Match('>');
     Expression();
-    Emit("CMP (SP)+, D0\n");
-    Emit("SLE D0\n");
+    PopCompare();
+    SetGreater();
 }
 
 //Parse and Translate a Relation
@@ -40,7 +40,7 @@ void Greater(){
 void Relation(){
     Expression();
     if (IsRelop(Look)){
-        Emit("MOVE D0, -(SP)\n");
+        Push();
         switch (Look){
             case '=':
                 Equals();
@@ -55,7 +55,7 @@ void Relation(){
                 Greater();
                 break;
         }
-        Emit("TST D0\n");
+        Emit("TST D0\n"); //FIXME (?)
     }
 }
 
@@ -70,13 +70,13 @@ void BoolFactor(){
     }
 
     if (IsBoolean(Look)) {
-        if (GetBoolean()) Emit("MOVE #-1, D0\n");
-        else Emit("CLR D0\n");
+        if (GetBoolean()) SetTrue();
+        else SetFalse();
     }else{
         Relation();
     }
 
-    if (neg) Emit("EOR #-1, D0\n");
+    if (neg) NotIt();
 }
 
 //Parse and Translate a Boolean Term
@@ -84,10 +84,10 @@ void BoolFactor(){
 void BoolTerm(){
     BoolFactor();
     while (Look == '&'){
-        Emit("MOVE D0, -(SP)\n");
+        Push();
         Match('&');
         BoolFactor();
-        Emit("AND (SP)+, D0\n");
+        PopAnd();
     }
 }
 
@@ -95,14 +95,14 @@ void BoolTerm(){
 void BoolOr(){
     Match('|');
     BoolTerm();
-    Emit("OR (SP)+, D0\n");
+    PopOr();
 }
 
 //Recognize and Translate a Boolean XOR
 void BoolXor(){
     Match('~');
     BoolTerm();
-    Emit("EOR (SP)+, D0\n");
+    PopXor();
 }
 
 //Parse and Translate a Boolean Expression
@@ -111,7 +111,7 @@ void BoolXor(){
 void BoolExpression(){
     BoolTerm();
     while (IsOrop(Look)){
-        Emit("MOVE D0, -(SP)\n");
+        Push();
         switch (Look){
             case '|':
                 BoolOr();

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include "primitive.h"
 
 //Constant Declaration
 #define TAB '\t'

@@ -18,11 +18,11 @@ void DoIf(char *L){
     BoolExpression();
     L1 = NewLabel();
     L2 = NULL;
-    Emit("BEQ %s\n", L1);
+    BranchFalse(L);
     Block(L);
     if (Token == 'L') {
         L2 = NewLabel();
-        Emit("BRA %s\n", L2);
+        Branch(L);
         PostLabel(L1);
         Block(L);
     }
@@ -40,10 +40,10 @@ void DoWhile(){
     L2 = NewLabel();
     PostLabel(L1);
     BoolExpression();
-    Emit("BEQ %s\n", L2);
+    BranchFalse(L2);
     Block(L2);
     MatchString("ENDWHILE");
-    Emit("BRA %s\n", L1);
+    Branch(L1);
     PostLabel(L2);
     free(L1);
     free(L2);
@@ -58,7 +58,7 @@ void DoLoop(){
     PostLabel(L1);
     Block(L2);
     MatchString("ENDLOOP");
-    Emit("BRA %s\n", L1);
+    Branch(L1);
     PostLabel(L2);
 
     free(L1);
@@ -75,7 +75,7 @@ void DoRepeat(){
     Block(L2);
     MatchString("UNTIL");
     BoolExpression();
-    Emit("BEQ %s\n", L1);
+    Branch(L1);
     PostLabel(L2);
 
     free(L1);
@@ -85,32 +85,34 @@ void DoRepeat(){
 //Recognize and Translate a FOR Construct
 //<FOR-statement> ::= "FOR" <name> "=" <expr1> <expr2> <block> "ENDFOR"
 void DoFor(){
-    char *L1, *L2;
+    char *L1, *L2, *Name;
+    if (!(Name = malloc(ValueSize * sizeof (char)))) MemError();
     L1 = NewLabel();
     L2 = NewLabel();
     GetName();
+    strcpy(Name, Value);
+
     Match('=');
     Expression();
     Emit("SUBQ #1, D0\n");
-    Emit("LEA %s(PC), A0\n", Value);
-    Emit("MOVE D0, (A0)\n");
+    Store(Name);
     Expression();
-    Emit("MOVE D0, -(SP)\n");
+    Push();
     PostLabel(L1);
-    Emit("LEA %s(PC), A0\n", Value);
-    Emit("MOVE (A0), D0\n");
+    LoadVar(Name);
     Emit("ADDQ #1, D0\n");
-    Emit("MOVE D0, (A0)\n");
+    Store(Name):
     Emit("CMP (SP), D0\n");
     Emit("BGT %s\n", L2);
     Block(L2);
     MatchString("ENDFOR");
-    Emit("BRA %s\n", L1);
+    Branch(L1);
     PostLabel(L2);
     Emit("ADDQ #2, SP\n");
 
     free(L1);
     free(L2);
+    free(Name);
 }
 
 //Recognize and Translate a DO Construct
@@ -122,7 +124,7 @@ void DoDo(){
     Expression();
     Emit("SUBQ #1, D0\n");
     PostLabel(L1);
-    Emit("MOVE D0, -(SP)\n");
+    Push();
     Block(L2);
     MatchString("ENDDO");
     Emit("MOVE (SP)+, D0\n");
@@ -138,7 +140,7 @@ void DoDo(){
 //Recognize and Translate a BREAK Statement
 //<BREAK-statement> ::= "BREAK"
 void DoBreak(char *L){
-    if (L) Emit("BRA %s\n", L);
+    if (L) Branch(L);
     else Abort("Can't break from global scope");
 }
 

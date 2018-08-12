@@ -9,9 +9,9 @@ void Ident(){
     if (Look == '('){
         Match('(');
         Match(')');
-        Emit("BSR %s\n", Value);
+        FuncCall(Value);
     }else{
-        Emit("MOVE %s(PC), D0\n", Value);
+        LoadVar(Value);
     }
 }
 
@@ -39,24 +39,23 @@ void Factor(){
         Ident();
     }else{
         GetNum();
-        Emit("MOVE #%s, D0\n", Value);
+        LoadConst(Value);
     }
-    if (neg) Emit("NEG D0\n");
+    if (neg) Negate();
 }
 
 //Recognize and Translate a Multiply
 void Multiply(){
     Match('*');
     Factor();
-    Emit("MULS (SP)+, D0\n");
+    PopMul();
 }
 
 //Recognize and Translate a Divide
 void Divide(){
     Match('/');
     Factor();
-    Emit("MOVE (SP)+, D1\n");
-    Emit("DIVS D1, D0\n");
+    PopDiv();
 }
 
 //Parse and Translate a Math Term
@@ -66,7 +65,7 @@ void Term(){
     Factor();
 
     while ( IsMulop(Look) ){
-        Emit("MOVE D0, -(SP)\n");
+        Push();
         switch (Look){
             case '*':
                 Multiply();
@@ -82,15 +81,14 @@ void Term(){
 void Add(){
     Match('+');
     Term();
-    Emit("ADD (SP)+, D0\n");
+    PopAdd();
 }
 
 //Recognize and Translate a Subtract
 void Subtract(){
     Match('-');
     Term();
-    Emit("SUB (SP)+, D0\n");
-    Emit("NEG D0\n");
+    PopSub();
 }
 
 //Parse and Translate an Expression
@@ -99,8 +97,8 @@ void Subtract(){
 void Expression(){
     Term();
 
-    Emit("MOVE D0, -(SP)\n");
     while ( IsAddop(Look) ){
+        Push();
         switch (Look){
             case '+':
                 Add();
@@ -121,7 +119,6 @@ void Assignment(){
 
     Match('=');
     BoolExpression();
-    Emit("LEA %s(PC), A0\n", Name);
-    Emit("MOVE D0, (A0)\n");
+    Store(Name);
     free(Name);
 }
