@@ -5,68 +5,84 @@
 //Parse and Translate an Identifier
 //<ident> ::= <function> "()" | <variable>
 void Ident(){
-    GetName();
-    if (Look == '('){
+    DEBUG;
+    char *Name;
+    if (!(Name = malloc(ValueSize * sizeof (char)))) MemError();
+    strcpy(Name, Value);
+
+    Next();
+    if (Token == '('){
         Match('(');
         Match(')');
-        FuncCall(Value);
+        FuncCall(Name);
     }else{
-        LoadVar(Value);
+        LoadVar(Name);
     }
+    DEBUGRET;
 }
 
 //Parse and Translate a Math Factor
 //<factor> ::= [<addop>] <unsigned-factor>
 //<unsigned-factor> :: = "(" <expression> ")" | <ident> | <number>
 void Factor(){
+    DEBUG;
     int neg = 0;
 
-    switch (Look){
+    switch (Token){
         case '+':
-            Match('+');
+            Next();
             break;
         case '-':
-            Match('-');
+            Next();
             neg = 1;
             break;
     }
 
-    if (Look == '('){
-        Match('(');
+    if (Token == '('){
+        Next();
         Expression();
         Match(')');
-    }else if ( IsAlpha(Look) ){
+    } else if ( (Token = 'x') ) {
         Ident();
-    }else{
-        GetNum();
+    } else if ( (Token = '#') ) {
         LoadConst(Value);
+        Next();
+    } else {
+        Expected("Math Factor");
     }
+
     if (neg) Negate();
+    DEBUGRET;
 }
 
 //Recognize and Translate a Multiply
 void Multiply(){
-    Match('*');
+    DEBUG;
+    Next();
     Factor();
     PopMul();
+    DEBUGRET;
 }
 
 //Recognize and Translate a Divide
 void Divide(){
-    Match('/');
+    DEBUG;
+    Next();
     Factor();
     PopDiv();
+    DEBUGRET;
 }
 
 //Parse and Translate a Math Term
 //<term> ::= <factor> [ <mulop> <factor> ]*
 //<mulop> ::= "*" | "/"
 void Term(){
+    DEBUG;
     Factor();
 
-    while ( IsMulop(Look) ){
+    while ( IsMulop(Token) ){
         Push();
-        switch (Look){
+        switch (Token){
             case '*':
                 Multiply();
                 break;
@@ -75,31 +91,37 @@ void Term(){
                 break;
         }
     }
+    DEBUGRET;
 }
 
 //Recognize and Translate an Add
 void Add(){
-    Match('+');
+    DEBUG;
+    Next();
     Term();
     PopAdd();
+    DEBUGRET;
 }
 
 //Recognize and Translate a Subtract
 void Subtract(){
-    Match('-');
+    DEBUG;
+    Next();
     Term();
     PopSub();
+    DEBUGRET;
 }
 
 //Parse and Translate an Expression
 //<expression> ::= <term> [ <addop> <term> ]*
 //<addop> ::= "+" | "-"
 void Expression(){
+    DEBUG;
     Term();
 
-    while ( IsAddop(Look) ){
+    while ( IsAddop(Token) ){
         Push();
-        switch (Look){
+        switch (Token){
             case '+':
                 Add();
                 break;
@@ -108,17 +130,21 @@ void Expression(){
                 break;
         }
     }
+    DEBUGRET;
 }
 
 //Parse and Translate an Assignment Statement
 //<assignment> ::= <ident> "=" <expression>
 void Assignment(){
+    DEBUG;
     char *Name;
     if (!(Name = malloc(ValueSize * sizeof (char)))) MemError();
     strcpy(Name, Value);
 
+    Next();
     Match('=');
     BoolExpression();
     Store(Name);
     free(Name);
+    DEBUGRET;
 }

@@ -20,7 +20,7 @@
 <b-factor> ::= <b-literal> | <relation>
 <b-literal> ::= "T" | "F"
 <relation> ::= <expression> [ <relop> <expression> ]
-<relop> ::= "=" | "#" | "<" | ">"
+<relop> ::= "=" | "<" | ">" | "<>" | "<=" | ">="
 
 <assignment> ::= <name> "=" <expression>
 <expression> ::= <term> [ <addop> <term> ]*

@@ -13,18 +13,20 @@ void PopDiv(void); //Divide Top of Stack by Primary
 void Store(char *); //Stare Primary to Variable
 void FuncCall(char *); //Call Function
 
-void NotIt() //Complement Primary Register
-void PopAnd() //AND Top of Stack with Primary
-void PopOr() //OR Top of Stack with Primary
-void PopXor() //XOR Top of Stack with Primary
-void PopCompare() //Compare Top of Stack with Primary
-void SetEqual() //Set D0 If Compare was =
-void SetNEqual() //Set D0 If Compare was !=
-void SetGreater() //Set D0 If Compare was >
-void SetLess() //Set D0 If Compare was <
+void NotIt(void); //Complement Primary Register
+void PopAnd(void); //AND Top of Stack with Primary
+void PopOr(void); //OR Top of Stack with Primary
+void PopXor(void); //XOR Top of Stack with Primary
+void PopCompare(void); //Compare Top of Stack with Primary
+void SetEqual(void); //Set D0 If Compare was =
+void SetNEqual(void); //Set D0 If Compare was !=
+void SetGreater(void); //Set D0 If Compare was >
+void SetGreaterOrEqual(void); //Set D0 If Compare was >=
+void SetLess(void); //Set D0 If Compare was <
+void SetLessOrEqual(void); //Set D0 If Compare was <=
 
-void SetTrue(); //Set D0 to True
-void SetFalse(); //Set D0 to False
+void SetTrue(void); //Set D0 to True
+void SetFalse(void); //Set D0 to False
 void Branch(char *L); //Branch Unconditional
 void BranchFalse(char *L); //Branch False
 

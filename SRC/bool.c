@@ -2,51 +2,62 @@
 #include "bool.h"
 #include "expr.h"
 
-//Recognize and Translate a Relational "Equals"
 void Equals(){
-    Match('=');
+    DEBUG;
+    Next();
     Expression();
     PopCompare();
     SetEqual();
+    DEBUGRET;
 }
 
-//Recognize and Translate a Relational "Nat Equals"
-void NotEquals(){
-    Match('#');
-    Expression();
-    PopCompare();
-    SetNEqual();
-}
-
-//Recognize and Translate a Relational "Less Than"
 void Less(){
-    Match('<');
-    Expression();
-    PopCompare();
-    SetLess();
+    DEBUG;
+    Next();
+    if (Token == '=') {
+        Next();
+        Expression();
+        PopCompare();
+        SetLessOrEqual();
+    } else if (Token == '>') {
+        Next();
+        Expression();
+        PopCompare();
+        SetNEqual();
+    } else {
+        Expression();
+        PopCompare();
+        SetLess();
+    }
+    DEBUGRET;
 }
 
-//Recognize and Translate a Relational "Greater Than"
 void Greater(){
-    Match('>');
-    Expression();
-    PopCompare();
-    SetGreater();
+    DEBUG;
+    Next();
+    if (Token == '=') {
+        Next();
+        Expression();
+        PopCompare();
+        SetGreaterOrEqual();
+    } else {
+        Expression();
+        PopCompare();
+        SetGreater();
+    }
+    DEBUGRET;
 }
 
-//Parse and Translate a Relation
 //<relation> ::= <expression> [<relop> <expression>]
-//<relop> ::= "=" | "#" | "<" | ">"
+//<relop> ::= "=" | "<" | ">" | "<>" | "<=" | ">="
 void Relation(){
+    DEBUG;
     Expression();
-    if (IsRelop(Look)){
+    if (IsRelop(Token)){
         Push();
-        switch (Look){
+        switch (Token){
             case '=':
                 Equals();
-                break;
-            case '#':
-                NotEquals();
                 break;
             case '<':
                 Less();
@@ -57,19 +68,21 @@ void Relation(){
         }
         Emit("TST D0\n"); //FIXME (?)
     }
+    DEBUGRET;
 }
 
 //Parse and Translate a Boolean Factor
 //<b-notfactor> :: ["!"] <b-factor>
 //<b-factor> ::= <b-literal> | <relation>
 void BoolFactor(){
+    DEBUG;
     int neg = 0;
-    if (Look == '!'){
-        Match('!');
+    if (Token == '!'){
+        Next();
         neg = 1;
     }
 
-    if (IsBoolean(Look)) {
+    if (IsBoolean(Token)) {
         if (GetBoolean()) SetTrue();
         else SetFalse();
     }else{
@@ -77,42 +90,50 @@ void BoolFactor(){
     }
 
     if (neg) NotIt();
+    DEBUGRET;
 }
 
 //Parse and Translate a Boolean Term
 //<b-term> ::= <b-notfactor> ["&" <b-notfactor>]*
 void BoolTerm(){
+    DEBUG;
     BoolFactor();
-    while (Look == '&'){
+    while (Token == '&'){
         Push();
-        Match('&');
+        Next();
         BoolFactor();
         PopAnd();
     }
+    DEBUGRET;
 }
 
 //Recognize and Translate a Boolean OR
 void BoolOr(){
-    Match('|');
+    DEBUG;
+    Next();
     BoolTerm();
     PopOr();
+    DEBUGRET;
 }
 
 //Recognize and Translate a Boolean XOR
 void BoolXor(){
-    Match('~');
+    DEBUG;
+    Next();
     BoolTerm();
     PopXor();
+    DEBUGRET;
 }
 
 //Parse and Translate a Boolean Expression
 //<b-expression> ::= <b-term> [<orop> <b-term>]*
 //<orop> ::= "OR" | "XOR"
 void BoolExpression(){
+    DEBUG;
     BoolTerm();
-    while (IsOrop(Look)){
+    while (IsOrop(Token)){
         Push();
-        switch (Look){
+        switch (Token){
             case '|':
                 BoolOr();
                 break;
@@ -121,4 +142,5 @@ void BoolExpression(){
                 break;
         }
     }
+    DEBUGRET;
 }

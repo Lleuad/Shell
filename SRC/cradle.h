@@ -8,6 +8,14 @@
 #include <stdarg.h>
 #include "primitive.h"
 
+//debugging
+#define DEBUGGING
+#ifdef DEBUGGING
+    int DEBUGCOUNT;
+    #define DEBUG DEBUGCOUNT++; fprintf(stderr, "%*s%-*s 0x%02X, %c, %s\n", DEBUGCOUNT, "", 32-DEBUGCOUNT, __func__, Look, Token, Value)
+    #define DEBUGRET DEBUGCOUNT--
+#endif //debugging
+
 //Constant Declaration
 #define TAB '\t'
 #define EXP " Expected"
@@ -40,27 +48,26 @@ void Expected_c(char c);
 #define IsAlpha isalpha
 #define IsDigit isdigit
 #define IsAlNum isalnum
+#define IsWhite isspace
 #define IsAddop(c) (c == '+' || c == '-')
 #define IsMulop(c) (c == '*' || c == '/')
-#define IsWhite(c) (c == ' ' || c == TAB)
-#define IsCR(c) (c == CR || c == '\r')
 #define IsBoolean(c) (c == 'F' || c == 'T')
 #define IsOrop(c) (c == '|' || c == '~')
 #define IsRelop(c) (c == '=' || c == '#' || c == '<' || c == '>')
 #define IsOp(c) (IsAddop(c) || IsMulop(c) || IsRelop(c))
 
 //Skip White Space
-#define SkipWhite() while IsWhite(Look) GetChar()
-#define Fin() while IsCR(Look) GetChar()
+#define SkipWhite() while ( IsWhite(Look) ) GetChar()
 
-void SkipComma(void);            //Skip Over a Comma
-void Match(char);                //Match a Specific Input Character
-void MatchString(const char *);  //Match a Specific Input String
-void GetName(void);              //Get an Identifier
-void GetNum(void);               //Get a Number
-void GetOp(void);                //Get an Operator
-int GetBoolean(void);            //Get a Boolean Literal
-char* NewLabel(void);            //Generate a Unique Label
+void SkipComma(void); //Skip Over a Comma
+void Match(char); //Match a Specific Input Character
+void MatchString(const char *); //Match a Specific Input String
+void Next(void); //Get the Next Input Token
+void GetName(void); //Get an Identifier
+void GetNum(void); //Get a Number
+void GetOp(void); //Get an Operator
+int GetBoolean(void); //Get a Boolean Literal
+char* NewLabel(void); //Generate a Unique Label
 
 //Post a Label To Outpun
 #define PostLabel(L) fprintf(stdout, "%s:\n", L)

@@ -6,21 +6,26 @@
 
 //Recognize and Translate an "Other"
 void Other(){
+    DEBUG;
     GetName();
     Emit("%s\n", Value);
+    DEBUGRET;
 }
 
 //Recognize and Translate an IF Construct
 //<IF-statement> ::= IF <condition> <block> ["ELSE" <block>] "ENDIF"
 void DoIf(char *L){
+    DEBUG;
     char* L1;
     char* L2;
+    Next();
     BoolExpression();
     L1 = NewLabel();
     L2 = NULL;
     BranchFalse(L);
     Block(L);
     if (Token == 'L') {
+        Next();
         L2 = NewLabel();
         Branch(L);
         PostLabel(L1);
@@ -30,12 +35,15 @@ void DoIf(char *L){
     PostLabel(L2 ? L2 : L1);
     free(L1);
     free(L2);
+    DEBUGRET;
 }
 
 //Recognize and Translate a WHILE Construct
 //<WHILE-statement> ::= "WHILE" <condition> <block> "ENDWHILE"
 void DoWhile(){
+    DEBUG;
     char *L1, *L2;
+    Next();
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
@@ -47,12 +55,15 @@ void DoWhile(){
     PostLabel(L2);
     free(L1);
     free(L2);
+    DEBUGRET;
 }
 
 //Recognize and Translate a LOOP Construct
 //<LOOP-statement> ::= "LOOP" <block> "ENDLOOP"
 void DoLoop(){
+    DEBUG;
     char *L1, *L2;
+    Next();
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
@@ -63,12 +74,15 @@ void DoLoop(){
 
     free(L1);
     free(L2);
+    DEBUGRET;
 }
 
 //Recognize and Translate a REPEAT Construct
 //<REPEAT-statement> ::= "REPEAT" <block> "UNTIL" <condition>
 void DoRepeat(){
+    DEBUG;
     char *L1, *L2;
+    Next();
     L1 = NewLabel();
     L2 = NewLabel();
     PostLabel(L1);
@@ -80,18 +94,20 @@ void DoRepeat(){
 
     free(L1);
     free(L2);
+    DEBUGRET;
 }
 
-//Recognize and Translate a FOR Construct
 //<FOR-statement> ::= "FOR" <name> "=" <expr1> <expr2> <block> "ENDFOR"
 void DoFor(){
+    DEBUG;
     char *L1, *L2, *Name;
+    Next();
     if (!(Name = malloc(ValueSize * sizeof (char)))) MemError();
     L1 = NewLabel();
     L2 = NewLabel();
-    GetName();
     strcpy(Name, Value);
 
+    Next();
     Match('=');
     Expression();
     Emit("SUBQ #1, D0\n");
@@ -101,7 +117,7 @@ void DoFor(){
     PostLabel(L1);
     LoadVar(Name);
     Emit("ADDQ #1, D0\n");
-    Store(Name):
+    Store(Name);
     Emit("CMP (SP), D0\n");
     Emit("BGT %s\n", L2);
     Block(L2);
@@ -113,12 +129,15 @@ void DoFor(){
     free(L1);
     free(L2);
     free(Name);
+    DEBUGRET;
 }
 
 //Recognize and Translate a DO Construct
 //<DO-statement> ::= "DO" <expr> <block> "ENDDO"
 void DoDo(){
+    DEBUG;
     char *L1, *L2;
+    Next();
     L1 = NewLabel();
     L2 = NewLabel();
     Expression();
@@ -135,18 +154,22 @@ void DoDo(){
 
     free(L1);
     free(L2);
+    DEBUGRET;
 }
 
 //Recognize and Translate a BREAK Statement
 //<BREAK-statement> ::= "BREAK"
 void DoBreak(char *L){
+    DEBUG;
+    Next();
     if (L) Branch(L);
     else Abort("Can't break from global scope");
+    DEBUGRET;
 }
 
-//Recognize and Translate a Statement Block
 //<block> ::= [ <statement> ]*
 void Block(char *L){
+    DEBUG;
     Scan();
     while ( !(Token == 'E' || Token == 'L' || Token == 'U') ){
         switch (Token) {
@@ -177,12 +200,16 @@ void Block(char *L){
         }
         Scan();
     }
+    DEBUGRET;
 }
 
 //Parse and Translate a Program
 //<program> ::= <block> END
 void DoProgram(){
+    DEBUG;
+    Next();
     Block(NULL);
     MatchString("END");
     Emit("END\n");
+    DEBUGRET;
 }

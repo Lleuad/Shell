@@ -30,6 +30,7 @@ char Lookup(struct KWcode T[], char *s){
 
 //Lexical Scanner
 void Scan(){
-    GetName();
-    Token = Lookup(KWlist, Value);
+    if (Token == 'x') Token = Lookup(KWlist, Value);
+    DEBUG;
+    DEBUGRET;
 }

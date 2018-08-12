@@ -108,9 +108,21 @@ void SetGreater(){
     Emit("EXT D0\n");
 }
 
+void SetGreaterOrEqual(){
+    Emit(";SETGE\n");
+    Emit("SLE D0\n");
+    Emit("EXT D0\n");
+}
+
 void SetLess(){
     Emit(";SETLT\n");
     Emit("SGT D0\n");
+    Emit("EXT D0\n");
+}
+
+void SetLessOrEqual(){
+    Emit(";SETLE\n");
+    Emit("SGE D0\n");
     Emit("EXT D0\n");
 }
 

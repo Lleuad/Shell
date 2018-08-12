@@ -8,12 +8,12 @@ void Abort(const char* s){
 
 //Report What Was Expected
 void Expected_s(const char* s){
-    fprintf(stderr, "Error: Got '%c', Expected %s.\n", Look, s);
+    fprintf(stderr, "Error: Got '%c', Expected %s.\n", Token, s);
     exit(1);
 }
 
 void Expected_c(char c){
-    fprintf(stderr, "Error: Got '%c', '%c' Expected.\n", Look, c);
+    fprintf(stderr, "Error: Got '%c', '%c' Expected.\n", Token, c);
     exit(1);
 }
 
@@ -26,25 +26,31 @@ void SkipComma(){
     }
 }
 
-//Match a Specific Input Character
 void Match(char x){
-    if(Look == x){
-        GetChar();
-        SkipWhite();
-    }else{
-        Expected(x);
-    }
+    if ( !(Token == x) ) Expected(x);
+    Next();
 }
 
 void MatchString(const char* s){
     if (strcmp(Value, s)) Expected(s);
+    Next();
 }
 
-//Get an Identifier
+void Next(){
+    SkipWhite();
+    if ( IsAlpha(Look) ) GetName();
+    else if ( IsDigit(Look) ) GetNum();
+    else if ( IsOp(Look) ) GetOp();
+    else {
+        Value[0] = Look;
+        Value[1] = 0;
+        Token = Look;
+        GetChar();
+    }
+}
+
 void GetName(){
     size_t i;
-    Fin();
-    if ( !IsAlpha(Look) ) Expected("Name");
     for (i = 0; IsAlNum(Look); i++, GetChar()){
         Value[i] = (char)toupper(Look);
         if (i == ValueSize){
@@ -53,13 +59,11 @@ void GetName(){
        }
     }
     Value[i] = 0;
-    SkipWhite();
+    Token = 'x';
 }
 
-//Get a Number
 void GetNum(){
     size_t i;
-    if ( !IsDigit(Look) ) Expected("Integer");
     for (i = 0; IsDigit(Look); i++, GetChar()){
         Value[i] = Look;
         if (i == ValueSize){
@@ -69,12 +73,11 @@ void GetNum(){
     }
     Value[i] = 0;
     Token = '#';
-    SkipWhite();
 }
 
 void GetOp(){
+#if 0
     size_t i;
-    if ( !IsOp(Look) ) Expected("Relation");
     for (i = 0; IsOp(Look); i++, GetChar()){
         Value[i] = Look;
         if (i == ValueSize){
@@ -83,7 +86,12 @@ void GetOp(){
        }
     }
     Value[i] = 0;
-    SkipWhite();
+    Token = Value[0];
+#endif //0
+    Token = Look;
+    Value[0] = Look;
+    Value[1] = 0;
+    GetChar();
 }
 
 //Get a Boolean Literal
@@ -98,7 +106,8 @@ int GetBoolean(){
 
 //Generate a Unique Label
 char* NewLabel(){
-    char* Label = malloc(2 + 2*sizeof Lcount);
+    char* Label;
+    if ( !(Label = malloc(2 + 2*sizeof Lcount)) ) MemError();
     sprintf(Label, "L%X", Lcount++);
     if (!Lcount) Abort("Lcount overflow");
     return Label;
@@ -117,10 +126,12 @@ void Emit(const char* fmt, ...){
 
 //Initialize
 void Init(){
+    #ifdef DEBUGGING
+    DEBUGCOUNT = 0;
+    #endif //DEBUGGING
     Lcount = 0;
     Value = malloc(TOKENSIZE * sizeof (char));
     ValueSize = TOKENSIZE;
     GetChar();
-    SkipWhite();
 }
 
